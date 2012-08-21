@@ -1,0 +1,215 @@
+#
+#   ATTENTION:  Note NUMBER OF ROWS and NUMBER OF COLUMNS
+#   You must record the NUMBER OF ROWS and the NUMBER OF COLUMNS.  
+#   Edit 'nrow=   ' and  'ncol= ' in the CONTROLS (below)
+
+#   Graphical output will appear on your screen and in a file
+#   The file has postscript .ps  (PostScript).  This .ps file
+#   can be edited in Adobe Illustrator.  It can be viewed in
+#   other major graphics viewers.
+
+#   Text output will appear in files inside this folder containing
+#   your   ____csv_setup.txt file, your ____csv_pscript.py file
+#   and your data. 
+#     Housekeeping:  Start by copying these three files to a new folder.  Otherwise
+#                    the number of files in this folder will become a nightmare.
+
+#   View the example .csv file using Excel.
+#   Note the xxxx at the upper left
+#   Note there are NO COMMAS in the labels for the rows or the labels for the columns
+#   Note there are NO COMMAS in the numbers in the cells.  (write '1000' not '1,000')
+
+
+
+# Data are in a .csv file whose name includes the .csv suffix.
+
+# Put this setup file And you data file in the same folder as  generic_csv_script.py
+
+# When you are ready to 'run' your data, run the 'program' or script generic_csv_script.py
+# STAY ALERT for new windows that will open BEHIND the window you are using.
+
+# It can be run either by starting it from the Python utility "IDLE"
+# or by entering TERMINAL.
+
+# TERMINAL is more devious (unless you are a unix user) and faster.  TERMINAL is
+# unix or some unix-like environment.  In TERMINAL you must use
+# unix navigation to go to the folder in which this setup and the generic script and the data are saved.
+# In Unix/TERMINAL navigate to this folder using variations of the unix CD command.
+# When your folder is the current directory, type Python generic_csv_script.py
+
+# Defaults that can be reset by changing this file (SKIP down to lines below this summary).
+
+# Default control values:
+#
+#     Data rectangular (or square but where row i is not assigned the same location as column i)
+#     Uses diagonal cells (ignored, and changed to False, if the data matrix is rectangular)
+#     2 dimensional map
+#     Geometry:   Minkowski power 2  (Euclidean metric)
+#     Attenuation:  Attenuation power 2  (constant odds ratios.)  
+#                   If you had a two-column table (do not try with this program),
+#                   and if you computed the log of the odds (column versus column) for each row
+#                   and if you plotted these log lines on a simple one dimensional graph
+#		    the resulting graph gives you a good summary of the correlations and
+#                   contrasts among row objects.  See my notes for columns "Obama" and "McCain"
+#                   with rows for age groups as well as gender and religion.)
+#
+#                   For data with more than 2 columns, any two columns can give you such a graph.
+#                   Each of these graphs shows differences (if any) among rows WITH RESPECT TO
+#                   the two particular columns.
+#
+#                   With Minkowski power 2, Attenuation power 2, and with two dimensions you get
+#                   a map.  This map allows you to approximate every one of the two column pairs
+#                   that might be laboriously constructed two columns at a time:
+#
+#                   Each column is a point. Each pair of points determines one of these column-column lines
+#                   If each row point is projected over to its position on that line, this line is the 
+#                   approximation to the line you would get with the simpler data (using the two columns).
+#    Draw lines:  If a row object is 'connected' to a column object, draw the connection as a line.
+#    Draw column sequence:  If you have arrange columns of data in some useful sequence, e.g., by dates
+#        in the .csv file, this will 'connect the dots' among the columns
+
+#=======================================================================
+
+# Below, parameters are in the lines that begin at the far left-hand side of
+# the page.
+
+# Use this setup file to specify these parameters if they are other than the default
+# parameters.  Commented-out parameters will be given default value
+
+#=======================================================================
+
+
+    #CONTROLS:
+
+nrow=25
+ncol=25
+
+### mod_type
+    # mod_type refers to the interpretation of the table.
+mod_type=square_symmetric
+#mod_type=square_asymmetric
+#mod_type=rectangular
+#mod_type=correspondence_analysis  NOT IMPLIMENTED
+
+
+    #If the data are, by definition, square, with row coords = col coords,
+    #and symmetrical (with cell i,j identical to cell j,i), then
+    #the appropriate mod_type is "square_asymmetric"
+
+    #if the row objects are to be give the same coordinates as their
+    #corresponding column objects -- but not necessarily the same size,
+    #then the appropriate mod_type is "square_asymmetric"
+
+    #If row objects are not necessarily in any a priori correspondence
+    #to column objects (as, for example, if they are unequal in number),
+    #then the mod_type is "rectangular"
+
+
+    #for correspondence analysis 
+    #this assumes a rectangular model.  It does not allow missing data.  It
+    #uses the diagonal.  It does not explicitly consider the symmetry of
+    #symmetrical data, but it will compute a result.  Data should be frequencies,
+    #specifically, they should be non-negative. Each row and column must
+    #have some non-zero data.
+
+#use_diagonal=True
+use_diagonal=False
+    #For friendship data in an otherwise square matrix, it is not at all clear what to
+    #use in the cell that would represent a person's friendship (or lack thereof) with
+    #self.  Rather than speculate on this deep question and, more important, rather than
+    #make an arbitrary decision that act like data and, therefore, influence the result --
+    #you can decide not to use the diagonal at all.  True   uses it.    False   does not.
+
+ndim=2
+    #Number of dimensions that the solution is allowed to use (default 2)
+
+
+#Let this run 4,000 over and over, with variable m and a, start from previous best (from older runs of ms.)
+minkowski_power=[.5,1,1.5,2]
+#minkowski_power=[1]
+    #2 corresponds to Euclidean geometry, 1 corresponds to 'city block geometry'
+    #The minkowski_power establishes a geometry (or, for power >=O and power <1, simply a 'space')
+    #If you enter a choice here, you override the default value 4  (This parameter has no
+    #effect on one dimensional solutions.)
+
+attenuation_power=[3,2,1,.7]  #guess #very slow.  Scan the full range, but do it in five parallel runs, on five processors
+#attenuation_power=[1]  #very slow.  Scan the full range, but do it in five parallel runs, on five processors
+    #2 corresponds to 'constant' odds ratios
+ 
+    #More specifically:  If the rows are equally spaced in one dimension
+    # and if the columns are equally spaced in one dimensions, and if
+    # attenuation_power=2 is  a valid descriptions of the data, then
+    # the predicted log odds ratios are equal (and the real ones should
+    # be equal.  This applies to odds ratios constructed from adjacent
+    # rows as well as adjacent columns.  
+    # If the model is correct then with unequally spaced rows and columns
+    # (and non-adjacent rows and columns), the log odds ratio is proportional
+    # to "delta x times delta y".  I.e., the value of the log odds ratio for 
+    # two rows with two columns is exactly proportional to the difference
+    # between the unknown x's for the rows and the unknown y's for the columns.
+
+    #Attenuation parameter:  This governs the relation between distance
+    #and the anticipated number of links.  For attenuation=1, the anticipated
+    #number of links attenuates exponentially with distance (exponential
+    #decay.  For attenuation=2, the anticipated number of links attenuates
+    #with bell-shaped form ('normal').  Numbers greater than 0 are recommended
+
+use_started_distance=False
+d_start=[.00] #[.01,.2] #0. #.1,.3   # start parameter for started distances
+
+opt_attenuation=True  #Usually better done by hand, opt_attenuation=False.  (The optimizer does not handle this well.)
+opt_minkowski=True  #Usually better done by hand, opt_attenuation=False.  (The optimizer does not handle this well.)
+opt_d_start=False
+continuation_or_startup=startup
+
+mod_form=p
+    #forms of various distributions (but not standardized to pdf's, since conditional pdf is irrelevant in presence of multipliers
+    #mod_form=p   #Standard DwV model:  form of "powernorm"  (generalized normal)
+    #mod_form=c   #Form of Cauchy, generalized to include metric and attenuation
+    #mod_form=i   #inverse distance, generalized to include metric, attenuation, 
+                  #and started_distance (there would be few zero distances in a category that spans an area)
+    #mod_form=CA  #relaxed-assumption Correspondence Analysis    (?RACA?)
+
+#c_start=.1  # The Cauchy form has a 1 in the denominator.  It can be reset to the value of c_start
+
+max_passes_for_run=1000 #00 #250
+n_semi_starts=10
+continuation_or_startup=startup
+
+    #Stopping criterion for the estimation of coordinates from data
+
+##omission_code   #if this is other than 'False' then data cells bearing the omission_code will
+    #be ignored for calculation of fit and, therefore, for estimation of parameters
+    #returned to program following 2/6/10
+    #Make this a number, not text.  
+omission_value=-99
+
+
+draw_lines=True
+draw_column_sequence=False
+
+last_column_gt_first_column=True
+
+##emphasis   These labels will be larger #than the rest (or emphasized)
+#emphasis=KALU,NWE,C,MS,SDK,VSEC,VE,Constant,TenPerCentPerYr,FXA,FXB,FXE,FX#M,BNZ,SP-500,DXY0,FXC,GLD,FXY,FRXF,FXS,HEP   
+
+#font="'Times',10"  not working yet. change inside two calls inside _pscript.py
+
+nudge_columns_toward_labelled_sequence_during_startup=True
+### IGNORE THE REST ###
+
+# pause_between_drawings:  The program will (should) always file its drawings to a file or files.
+# However, if you are running this program directly (as compared to running it through a Navigator),
+# then you may want to see the drawings on the screen as they are being drawn (and before they are
+# filed).  In this case it is useful to slow things down.  (Otherwise, the drawings are drawn, erased,
+# replaced by the next drawing, and erased again -- so quickly that nothing useful appears on the screen.
+# In either case, whether pause_between_drawings=True or pause_between_drawings=False, the drawings will 
+# be saved to a file.
+
+pause_between_drawings=True
+
+#hide_what_is_not_filed:  For some purposes it is useful to hide miscellaneous output, debugging stuff
+#progress reports, etc.  The program should run, file its stuff, and quit.
+
+#hide_what_is_not_filed=False  #not implimented
+
